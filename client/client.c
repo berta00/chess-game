@@ -72,7 +72,7 @@ void startGame(){
 }
 
 void quit(){
-	printf("\nbye! \n");
+	printf("\nbye!\n");
 	exit(1);
 }
 
