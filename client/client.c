@@ -35,6 +35,7 @@ void boardCreate(){
 					mainBoard[y][x] = 'm';
 				}
 			} else if(y >= 2 && y <= 5){
+				// casella vuota
 				mainBoard[y][x] = ' ';
 			}
 		}
@@ -46,8 +47,7 @@ void printBoard(char board[7][7]){
 	int gameY, gameX, Nline;
 
 	for(gameY = 0; gameY <= 7; gameY++){
-		Nline = gameY + 1;
-		printf("\n   +---+---+---+---+---+---+---+---+\n %d ",Nline++);
+		printf("\n   +---+---+---+---+---+---+---+---+\n %d ", abs(gameY - 8));
 		for(gameX = 0; gameX < 8; gameX++){
 			printf("| %c ", board[gameY][gameX]);
 			if(gameX == 7){
