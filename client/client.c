@@ -6,73 +6,59 @@ char gameBanner[] = " .d8888b.  888           ___  _ _  | |(_) _ _   ___  \nd88P
 
 char mainBoard[7][7];
 
-void movePieces(char startY, int startX, char destinationY, int destinationX){
+int movePieces(char board[7][7], int startY, char startX, int destinationY, char destinationX){
 	int finalStartX, finalDestinationX;
-
-	char pieceType = mainBoard[startY][startX];
-
-	switch(startX){
-		case 'a':
-			finalStartX = 1;
-			break;
-		case 'b':
-			finalStartX = 2;
-			break;
-		case 'c':
-			finalStartX = 3;
-			break;
-		case 'd':
-			finalStartX = 4;
-			break;
-		case 'e':
-			finalStartX = 5;
-			break;
-		case 'f':
-			finalStartX = 6;
-			break;
-		case 'g':
-			finalStartX = 7;
-			break;
-		case 'h':
-			finalStartX = 8;
-			break;
-		default:
-			printf("error: invalid value X in function movePieces");
-	}
-
-	switch(destinationX){
-		case 'a':
-			finalDestinationX = 1;
-			break;
-		case 'b':
-			finalDestinationX = 2;
-			break;
-		case 'c':
-			finalDestinationX = 3;
-			break;
-		case 'd':
-			finalDestinationX = 4;
-			break;
-		case 'e':
-			finalDestinationX = 5;
-			break;
-		case 'f':
-			finalDestinationX = 6;
-			break;
-		case 'g':
-			finalDestinationX = 7;
-			break;
-		case 'h':
-			finalDestinationX = 8;
-			break;
-		default:
-			printf("error: invalid value X in function movePieces");
-	}
-
-	mainBoard[startY][finalStartX] = ' ';
 	
-	mainBoard[destinationY][finalDestinationX] = pieceType;
+	printf("%c", startX);
 
+	if(startX == 'a'){
+		finalStartX = 0;
+	} else if(startX == 'b'){
+		finalStartX = 1;
+	} else if(startX == 'c'){
+		finalStartX = 2;
+	} else if(startX == 'd'){
+		finalStartX = 3;
+	} else if(startX == 'e'){
+		finalStartX = 4;
+	} else if(startX == 'f'){
+		finalStartX = 5;
+	} else if(startX == 'g'){
+		finalStartX = 6;
+	} else if(startX == 'h'){
+		finalStartX = 7;
+	}	
+
+	if(destinationX == 'a'){
+		finalDestinationX = 0;
+	} else if(destinationX == 'b'){
+		finalDestinationX = 1;
+	} else if(destinationX == 'c'){
+		finalDestinationX = 2;
+	} else if(destinationX == 'd'){
+		finalDestinationX = 3;
+	} else if(destinationX == 'e'){
+		finalDestinationX = 4;
+	} else if(destinationX == 'f'){
+		finalDestinationX = 5;
+	} else if(destinationX == 'g'){
+		finalDestinationX = 6;
+	} else if(destinationX == 'h'){
+		finalDestinationX = 7;
+	}
+	
+	printf("\n\n%d-", startY);
+	printf("%d\n", finalStartX);
+	printf("%d-", destinationY);
+	printf("%d", finalDestinationX);
+
+	char pieceType = board[startY][finalStartX];
+
+	board[startY][finalStartX] = ' ';
+	
+	board[destinationY][finalDestinationX] = pieceType;
+
+	return 1;
 }
 
 void boardCreate(){
@@ -115,11 +101,7 @@ void boardCreate(){
 // orientation:
 // 1 - normal
 // 2 - reverse
-void printBoard(char board[7][7], int orientation, int refresh){
-	if(refresh == 1){
-		system("clear");
-	}
-	
+void printBoard(char board[7][7], int orientation){	
 	int gameY, gameX, Nline;
 
 	switch(orientation){
@@ -159,6 +141,7 @@ void printBoard(char board[7][7], int orientation, int refresh){
 }
 
 void startGame(){
+	int movePiecesReturn = 0;	
 	int gameFinish = 0;
 
 	// must change in online version
@@ -166,26 +149,29 @@ void startGame(){
 
 	while(gameFinish == 0){
 		system("clear");
+		
+		// debug print here
+	
 
 		char moveInput[6];
-		char startValueY, destinationValueY;
-		int startValueX, destinationValueX;
+		int startValueY, destinationValueY;
+		int movePiecesReurn;
 
 		printf("%s", gameBanner);
-		printf("\n\n game started:\n\n");
 
-		printBoard(mainBoard, 1, 1);
+		printBoard(mainBoard, 1);
 		
 		// take move input
 		printf("your move: ");
 		scanf("%s", &moveInput);
 		
-		// typical string: "2:h-5:f"
-		startValueX = (int)(moveInput[2]);
-		destinationValueX = (int)(moveInput[6]);
 		
-		movePieces(moveInput[2], startValueX, moveInput[6], destinationValueX);
-		printBoard(mainBoard, 1, 1);
+
+		// typical string: "2:h-5:f"
+		startValueY = atoi(&moveInput[0]);
+		destinationValueY = atoi(&moveInput[4]);
+		
+		movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
 	}
 }
 
