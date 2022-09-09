@@ -6,9 +6,14 @@ char gameBanner[] = " .d8888b.  888           ___  _ _  | |(_) _ _   ___  \nd88P
 
 char mainBoard[7][7];
 
+void quit(){
+	printf("bye!\n");
+	exit(1);
+}
+
 int movePieces(char board[7][7], int startY, char startX, int destinationY, char destinationX){
 	int finalStartX, finalDestinationX;
-	
+
 	printf("%c", startX);
 
 	if(startX == 'a'){
@@ -46,15 +51,13 @@ int movePieces(char board[7][7], int startY, char startX, int destinationY, char
 	} else if(destinationX == 'h'){
 		finalDestinationX = 7;
 	}
-	
-	printf("\n\n%d-", startY);
-	printf("%d\n", finalStartX);
-	printf("%d-", destinationY);
-	printf("%d", finalDestinationX);
+
+	startY = abs(startY - 7);
+	destinationY = abs(destinationY - 7);
 
 	char pieceType = board[startY][finalStartX];
 
-	board[startY][finalStartX] = ' ';
+	board[startY][finalStartX] = '\x20';
 	
 	board[destinationY][finalDestinationX] = pieceType;
 
@@ -140,9 +143,16 @@ void printBoard(char board[7][7], int orientation){
 	}
 }
 
-void startGame(){
+void startGame(char gameOrientation[]){
 	int movePiecesReturn = 0;	
 	int gameFinish = 0;
+	int boardOrientation = 1;
+
+	if(gameOrientation == "normal"){
+		boardOrientation = 1;
+	} else if(gameOrientation == "reverse"){
+		boardOrientation = 2;
+	}
 
 	// must change in online version
 	boardCreate();
@@ -159,29 +169,30 @@ void startGame(){
 
 		printf("%s", gameBanner);
 
-		printBoard(mainBoard, 1);
-		
+		printBoard(mainBoard, boardOrientation);
+
 		// take move input
 		printf("your move: ");
 		scanf("%s", &moveInput);
-		
-		
+
+		if(moveInput == "qt"){
+			quit();		
+		} else if (moveInput == "rs"){
+			startGame(gameOrientation);
+		}
 
 		// typical string: "2:h-5:f"
 		startValueY = atoi(&moveInput[0]);
 		destinationValueY = atoi(&moveInput[4]);
-		
+
 		movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
 	}
 }
 
-void quit(){
-	printf("bye!\n");
-	exit(1);
-}
-
-int main(){
+void menu(){
 	system("clear");
+
+	char clientOrientation[] = "normal";
 
 	// menu
 	printf("%s", gameBanner);
@@ -197,7 +208,7 @@ int main(){
 
 	switch(inputChoise){
 		case 1:
-			startGame();
+			startGame(clientOrientation);
 			break;
 		case 2:
 			quit();
@@ -205,6 +216,9 @@ int main(){
 		default:
 			printf("invalid value");
 	}
-
-	return 0;
 }
+
+int main(){
+	menu();
+}
+
