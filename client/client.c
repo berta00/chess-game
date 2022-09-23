@@ -35,43 +35,44 @@ int XcoordinatesConverter(char coordinateX){
 	return returnValue;
 }
 
-int ceckMove(char board[7][7], int startY, char startX, int destinationY, char destinationX, char pieceType){
+int ceckMove(char board[7][7], int startY, int startX, int destinationY, int destinationX, char pieceType){
+	int distanceY = startY - destinationY;
+	int distanceX = startX - destinationX;
 	// setup the rules
-	// p can move 1 each time only forward, and must it in diagonal
-	if(pieceType == 'p'){
-		int distance = startY - destinationY;
-		if(distance == 1){
-			return 1;
-		} else if(distance == 2){
-			if(startY == 2 || startY == 7){
+	switch(pieceType){
+		// p can move 1 each time only forward, and must it in diagonal
+		case 'p':
+			if((distanceX == 0 && distanceY == 1 && mainBoard[destinationY][destinationX] == '\x20') || (distanceY == 2 && (startY == 1 || startY == 6))){
 				return 1;
+			} else if(abs(distanceX) == 1 && distanceY == 1 && mainBoard[destinationY][destinationX] != '\x20'){
+				return 2;
+			} else {
+				return 3;
 			}
-		} else {
-			return 2;
-		}
-	}
-	// t (tower) can move only on the y or x asxis
-	if(pieceType == 't'){
-		return 3;
-	}
-	// c (horse) can do "l" move in all orientation
-	if(pieceType == 'c'){
-		return 3;
-	}
-	// a (alfier) can move diagonaly
-	if(pieceType == 'a'){
-		return 3;
-	}
-	// f (fenale) can move were she wants
-	if(pieceType == 'f'){
-		return 3;
-	}
-	// m (male) can move once in all direction;
-	if(pieceType == 'm'){
-		return 3;
-	}
+			
+		// t (tower) can move only on the y or x asxis
+		case 't':
+			return 1;
 
-	return 0;
+		// c (horse) can do "l" move in all orientation
+		case 'c':
+			return 1;
+
+		// a (alfier) can move diagonaly
+		case 'a':
+			return 1;
+
+		// f (queen) can move were she wants
+		case 'f':
+			return 1;
+
+		// m (king) can move once in all direction;
+		case 'm':
+			return 1;
+
+		default:
+			return 0;
+	}
 }
 
 int movePieces(char board[7][7], int startY, char startX, int destinationY, char destinationX){
@@ -88,7 +89,7 @@ int movePieces(char board[7][7], int startY, char startX, int destinationY, char
 	int moveValidation = ceckMove(mainBoard, startY, finalStartX, destinationY, finalDestinationX, pieceType);
 
 	// if the move is legit
-	if(moveValidation == 1){
+	if(moveValidation == 1 || moveValidation == 2){
 		board[startY][finalStartX] = '\x20';
 		board[destinationY][finalDestinationX] = pieceType;
 	}
@@ -133,6 +134,8 @@ void boardCreate(){
 	return;
 }
 
+// number of prints (so number of move)
+int move = 0;
 // orientation:
 // 1 - normal
 // 2 - reverse
@@ -153,14 +156,20 @@ void printBoard(char board[7][7], int orientation, int moveReturnMessage){
 					printf("\n   +---+---+---+---+---+---+---+---+  \n");
 					printf("     a   b   c   d   e   f   g   h  \n\n");
 
-					if(moveReturnMessage == 0){
-						printf("Error 0: bad movePieces() or ceckMove() functioning\n");
-					} else if(moveReturnMessage == 1){
-						printf("\n");
-					} else if(moveReturnMessage == 2){
-						printf("Error 2: illegal move");
-					} else if(moveReturnMessage == 3){
-						printf("Error 3: siuuuum");
+					if(move == 0){
+						printf("Make your first move!\n");
+					} else {
+						if(moveReturnMessage == 0){
+							printf("Error: unknown piece :(\n");
+						} else if(moveReturnMessage == 1){
+							// random phrase
+							printf("Nice move!\n");
+						} else if(moveReturnMessage == 2){
+							// random eated phrase
+							printf("Eated!\n");
+						} else if(moveReturnMessage == 3){
+							printf("Error: illegal move :(\n");
+						}
 					}
 				}
 			}
@@ -172,20 +181,26 @@ void printBoard(char board[7][7], int orientation, int moveReturnMessage){
 					printf("| %c ", board[gameY][gameX]);
 					if(gameX == 0){
 						printf("|");
-					}epi
+					}
 				}
 				if(gameY == 0){
 					printf("\n   +---+---+---+---+---+---+---+---+  \n");
 					printf("     h   g   f   e   d   c   b   a  \n\n");
 
-					if(moveReturnMessage == 0){
-						printf("Error 0: bad movePieces() or ceckMove() functioning\n");
-					} else if(moveReturnMessage == 1){
-						printf("\n");
-					} else if(moveReturnMessage == 2){
-						printf("Error 2: illegal move");
-					} else if(moveReturnMessage == 3){
-						printf("Error 3: siuuuum");
+					if(move == 0){
+						printf("Make your first move!\n");
+					} else {
+						if(moveReturnMessage == 0){
+							printf("Error: unknown piece :(\n");
+						} else if(moveReturnMessage == 1){
+							// random phrase
+							printf("Nice move!\n");
+						} else if(moveReturnMessage == 2){
+							// random eated phrase
+							printf("Eated!\n");
+						} else if(moveReturnMessage == 3){
+							printf("Error: illegal move :(\n");
+						}
 					}
 				}
 			}
@@ -193,6 +208,8 @@ void printBoard(char board[7][7], int orientation, int moveReturnMessage){
 		default:
 			printf("error: wrong input in function printBoard()");
 	}
+
+	move++;
 }
 
 void startGame(char gameOrientation[]){
@@ -206,7 +223,7 @@ void startGame(char gameOrientation[]){
 		boardOrientation = 2;
 	}
 
-	// must change in online version
+	// change in online version
 	boardCreate();
 
 	while(gameFinish == 0){
@@ -233,7 +250,7 @@ void startGame(char gameOrientation[]){
 		startValueY = atoi(&moveInput[0]);
 		destinationValueY = atoi(&moveInput[4]);
 
-		int movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
+	  movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
 	}
 }
 
