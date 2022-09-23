@@ -11,57 +11,89 @@ void quit(){
 	exit(1);
 }
 
-int movePieces(char board[7][7], int startY, char startX, int destinationY, char destinationX){
-	int finalStartX, finalDestinationX;
-
-	printf("%c", startX);
-
-	if(startX == 'a'){
-		finalStartX = 0;
-	} else if(startX == 'b'){
-		finalStartX = 1;
-	} else if(startX == 'c'){
-		finalStartX = 2;
-	} else if(startX == 'd'){
-		finalStartX = 3;
-	} else if(startX == 'e'){
-		finalStartX = 4;
-	} else if(startX == 'f'){
-		finalStartX = 5;
-	} else if(startX == 'g'){
-		finalStartX = 6;
-	} else if(startX == 'h'){
-		finalStartX = 7;
-	}	
-
-	if(destinationX == 'a'){
-		finalDestinationX = 0;
-	} else if(destinationX == 'b'){
-		finalDestinationX = 1;
-	} else if(destinationX == 'c'){
-		finalDestinationX = 2;
-	} else if(destinationX == 'd'){
-		finalDestinationX = 3;
-	} else if(destinationX == 'e'){
-		finalDestinationX = 4;
-	} else if(destinationX == 'f'){
-		finalDestinationX = 5;
-	} else if(destinationX == 'g'){
-		finalDestinationX = 6;
-	} else if(destinationX == 'h'){
-		finalDestinationX = 7;
+// variable for the funcion below
+int returnValue = 10;
+int XcoordinatesConverter(char coordinateX){
+	if(coordinateX == 'a'){
+		returnValue = 0;
+	} else if(coordinateX == 'b'){
+		returnValue = 1;
+	} else if(coordinateX == 'c'){
+		returnValue = 2;
+	} else if(coordinateX == 'd'){
+		returnValue = 3;
+	} else if(coordinateX == 'e'){
+		returnValue = 4;
+	} else if(coordinateX == 'f'){
+		returnValue = 5;
+	} else if(coordinateX == 'g'){
+		returnValue = 6;
+	} else if(coordinateX == 'h'){
+		returnValue = 7;
 	}
 
+	return returnValue;
+}
+
+int ceckMove(char board[7][7], int startY, char startX, int destinationY, char destinationX, char pieceType){
+	// setup the rules
+	// p can move 1 each time only forward, and must it in diagonal
+	if(pieceType == 'p'){
+		int distance = startY - destinationY;
+		if(distance == 1){
+			return 1;
+		} else if(distance == 2){
+			if(startY == 2 || startY == 7){
+				return 1;
+			}
+		} else {
+			return 2;
+		}
+	}
+	// t (tower) can move only on the y or x asxis
+	if(pieceType == 't'){
+		return 3;
+	}
+	// c (horse) can do "l" move in all orientation
+	if(pieceType == 'c'){
+		return 3;
+	}
+	// a (alfier) can move diagonaly
+	if(pieceType == 'a'){
+		return 3;
+	}
+	// f (fenale) can move were she wants
+	if(pieceType == 'f'){
+		return 3;
+	}
+	// m (male) can move once in all direction;
+	if(pieceType == 'm'){
+		return 3;
+	}
+
+	return 0;
+}
+
+int movePieces(char board[7][7], int startY, char startX, int destinationY, char destinationX){
 	startY = abs(startY - 7);
 	destinationY = abs(destinationY - 7);
 
+	int finalStartX, finalDestinationX;
+
+	finalStartX = XcoordinatesConverter(startX);
+	finalDestinationX = XcoordinatesConverter(destinationX);
+
 	char pieceType = board[startY][finalStartX];
 
-	board[startY][finalStartX] = '\x20';
-	
-	board[destinationY][finalDestinationX] = pieceType;
+	int moveValidation = ceckMove(mainBoard, startY, finalStartX, destinationY, finalDestinationX, pieceType);
 
-	return 1;
+	// if the move is legit
+	if(moveValidation == 1){
+		board[startY][finalStartX] = '\x20';
+		board[destinationY][finalDestinationX] = pieceType;
+	}
+
+	return moveValidation;
 }
 
 void boardCreate(){
@@ -104,7 +136,7 @@ void boardCreate(){
 // orientation:
 // 1 - normal
 // 2 - reverse
-void printBoard(char board[7][7], int orientation){	
+void printBoard(char board[7][7], int orientation, int moveReturnMessage){
 	int gameY, gameX, Nline;
 
 	switch(orientation){
@@ -120,6 +152,16 @@ void printBoard(char board[7][7], int orientation){
 				if(gameY == 7){
 					printf("\n   +---+---+---+---+---+---+---+---+  \n");
 					printf("     a   b   c   d   e   f   g   h  \n\n");
+
+					if(moveReturnMessage == 0){
+						printf("Error 0: bad movePieces() or ceckMove() functioning\n");
+					} else if(moveReturnMessage == 1){
+						printf("\n");
+					} else if(moveReturnMessage == 2){
+						printf("Error 2: illegal move");
+					} else if(moveReturnMessage == 3){
+						printf("Error 3: siuuuum");
+					}
 				}
 			}
 			break;
@@ -130,11 +172,21 @@ void printBoard(char board[7][7], int orientation){
 					printf("| %c ", board[gameY][gameX]);
 					if(gameX == 0){
 						printf("|");
-					}
+					}epi
 				}
 				if(gameY == 0){
 					printf("\n   +---+---+---+---+---+---+---+---+  \n");
 					printf("     h   g   f   e   d   c   b   a  \n\n");
+
+					if(moveReturnMessage == 0){
+						printf("Error 0: bad movePieces() or ceckMove() functioning\n");
+					} else if(moveReturnMessage == 1){
+						printf("\n");
+					} else if(moveReturnMessage == 2){
+						printf("Error 2: illegal move");
+					} else if(moveReturnMessage == 3){
+						printf("Error 3: siuuuum");
+					}
 				}
 			}
 			break;
@@ -144,7 +196,7 @@ void printBoard(char board[7][7], int orientation){
 }
 
 void startGame(char gameOrientation[]){
-	int movePiecesReturn = 0;	
+	int movePiecesReturn = 0;
 	int gameFinish = 0;
 	int boardOrientation = 1;
 
@@ -159,24 +211,20 @@ void startGame(char gameOrientation[]){
 
 	while(gameFinish == 0){
 		system("clear");
-		
-		// debug print here
-	
 
-		char moveInput[6];
 		int startValueY, destinationValueY;
-		int movePiecesReurn;
+		char moveInput[6];
 
 		printf("%s", gameBanner);
 
-		printBoard(mainBoard, boardOrientation);
+		printBoard(mainBoard, boardOrientation, movePiecesReturn);
 
 		// take move input
 		printf("your move: ");
 		scanf("%s", &moveInput);
 
 		if(moveInput == "qt"){
-			quit();		
+			quit();
 		} else if (moveInput == "rs"){
 			startGame(gameOrientation);
 		}
@@ -185,7 +233,7 @@ void startGame(char gameOrientation[]){
 		startValueY = atoi(&moveInput[0]);
 		destinationValueY = atoi(&moveInput[4]);
 
-		movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
+		int movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
 	}
 }
 
@@ -221,4 +269,3 @@ void menu(){
 int main(){
 	menu();
 }
-
