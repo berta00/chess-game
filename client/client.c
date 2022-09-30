@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 char gameBanner[] = " .d8888b.  888           ___  _ _  | |(_) _ _   ___  \nd88P  Y88b 888       _  / _ \\| ' \\ | || || ' \\ / -_) \n888    888 888      |_| \\___/|_||_||_||_||_||_|\\___| \n888        88888b.   .d88b.  .d8888b  .d8888b        \n888        888 \"88b d8P  Y8b 88K      88K            \n888    888 888  888 88888888 \"Y8888b. \"Y8888b.       \nY88b  d88P 888  888 Y8b.          X88      X88       \n \"Y8888P\"  888  888  \"Y8888   88888P'  88888P'       \n";
 
@@ -36,23 +37,44 @@ int XcoordinatesConverter(char coordinateX){
 }
 
 int ceckMove(char board[7][7], int startY, int startX, int destinationY, int destinationX, char pieceType){
-	int distanceY = startY - destinationY;
-	int distanceX = startX - destinationX;
+	int deltaDistanceY = startY - destinationY;
+	int deltaDistanceX = startX - destinationX;
 	// setup the rules
 	switch(pieceType){
 		// p can move 1 each time only forward, and must it in diagonal
 		case 'p':
-			if((distanceX == 0 && distanceY == 1 && mainBoard[destinationY][destinationX] == '\x20') || (distanceY == 2 && (startY == 1 || startY == 6))){
+			if((deltaDistanceX == 0 && deltaDistanceY == 1 && mainBoard[destinationY][destinationX] == '\x20') || (deltaDistanceY == 2 && (startY == 1 || startY == 6))){
 				return 1;
-			} else if(abs(distanceX) == 1 && distanceY == 1 && mainBoard[destinationY][destinationX] != '\x20'){
+			} else if(abs(deltaDistanceX) == 1 && deltaDistanceY == 1 && mainBoard[destinationY][destinationX] != '\x20'){
 				return 2;
 			} else {
 				return 3;
 			}
-			
+
 		// t (tower) can move only on the y or x asxis
 		case 't':
-			return 1;
+			// check if the path is free
+			if(deltaDistanceX == 0 && deltaDistanceY != 0 && mainBoard[destinationY][destinationX] == '\x20'){
+				for(int i = 0; i < deltaDistanceY; i++){
+					if(mainBoard[i][destinationX] != '\x20'){
+						return 1;
+					} else {
+						return 1;
+					}
+				}
+			} else if(deltaDistanceY == 0 && deltaDistanceX != 0 && mainBoard[destinationY][destinationX] == '\x20'){
+				for(int i = 0; i < deltaDistanceX; i++){
+					if((deltaDistanceY == 0 && deltaDistanceX != 0 && mainBoard[deltaDistanceY][i] != '\x20') || (deltaDistanceY != 0 && deltaDistanceX == 0 && mainBoard[deltaDistanceY][i] != '\x20')){
+						return 1;
+					} else {
+						return 1;
+					}
+				}
+			} else if((deltaDistanceY == 0 && deltaDistanceX != 0 && mainBoard[destinationY][destinationX] != '\x20') || (deltaDistanceY != 0 && deltaDistanceX == 0 && mainBoard[destinationY][destinationX] != '\x20')){
+				return 2;
+			} else {
+				return 1;
+			}
 
 		// c (horse) can do "l" move in all orientation
 		case 'c':
@@ -93,41 +115,100 @@ int movePieces(char board[7][7], int startY, char startX, int destinationY, char
 		board[startY][finalStartX] = '\x20';
 		board[destinationY][finalDestinationX] = pieceType;
 	}
-
 	return moveValidation;
 }
 
 void boardCreate(){
 	int y, x;
 	for(y = 0; y <= 7; y++){
+		printf("\n{");
 		for(x = 0; x <= 7; x++){
 			if(y == 1 || y == 6){
 				// pedone
 				mainBoard[y][x] = 'p';
+				printf("p, ");
 			} else if(y == 0 || y == 7){
 				if(x == 0 || x == 7){
+					if(x == 0){
+						mainBoard[y][x] = 'l';
+						printf("l, ");
+					} else {
+						mainBoard[y][x] = 'k';
+						printf("k, ");
+					}
+
 					// torre
-					mainBoard[y][x] = 't';
+					//mainBoard[y][x] = 't';
 				}
 				if(x == 1 || x == 6){
 					// cavallo
 					mainBoard[y][x] = 'c';
+					printf("c, ");
 				}
 				if(x == 2 || x == 5){
 					// alfiere
 					mainBoard[y][x] = 'a';
+					printf("a, ");
 				}
 				if(x == 3){
 					// regina
 					mainBoard[y][x] = 'f';
+					printf("f, ");
 				}
 				if(x == 4){
 					// re
 					mainBoard[y][x] = 'm';
+					printf("m, ");
+
 				}
 			} else if(y >= 2 && y <= 5){
 				// casella vuota
 				mainBoard[y][x] = ' ';
+				printf(" , ");
+			}
+		}
+	}
+	return;
+}
+
+void debug(){
+	for(int y = 0; y <= 7; y++){
+		printf("\n{");
+		for(int x = 0; x <= 7; x++){
+			if(y == 1 || y == 6){
+				// pedone
+				printf("%c", mainBoard[y][x]);
+			} else if(y == 0 || y == 7){
+				if(x == 0 || x == 7){
+					if(x == 0){
+						printf("%c", mainBoard[y][x]);
+
+					} else {
+						printf("%c", mainBoard[y][x]);
+					}
+
+					// torre
+					//mainBoard[y][x] = 't';
+				}
+				if(x == 1 || x == 6){
+					// cavallo
+					printf("%c", mainBoard[y][x]);
+				}
+				if(x == 2 || x == 5){
+					// alfiere
+					printf("%c", mainBoard[y][x]);
+				}
+				if(x == 3){
+					// regina
+					printf("%c", mainBoard[y][x]);
+				}
+				if(x == 4){
+					// re
+					printf("%c", mainBoard[y][x]);
+				}
+			} else if(y >= 2 && y <= 5){
+				// casella vuota
+				printf("%c", mainBoard[y][x]);
 			}
 		}
 	}
@@ -147,7 +228,7 @@ void printBoard(char board[7][7], int orientation, int moveReturnMessage){
 			for(gameY = 0; gameY <= 7; gameY++){
 				printf("\n   +---+---+---+---+---+---+---+---+\n %d ", abs(gameY - 8));
 				for(gameX = 0; gameX < 8; gameX++){
-					printf("| %c ", board[gameY][gameX]);
+					printf("| %c%d%d ", board[gameY][gameX], gameY, gameX);
 					if(gameX == 7){
 						printf("|");
 					}
@@ -169,6 +250,8 @@ void printBoard(char board[7][7], int orientation, int moveReturnMessage){
 							printf("Eated!\n");
 						} else if(moveReturnMessage == 3){
 							printf("Error: illegal move :(\n");
+						} else if(moveReturnMessage == 4){
+							printf("Bye!");
 						}
 					}
 				}
@@ -226,32 +309,38 @@ void startGame(char gameOrientation[]){
 	// change in online version
 	boardCreate();
 
+
+	printf("\n\n\n\n");
+	debug(mainBoard);
+	printf("\n\n\n\n");
+
 	while(gameFinish == 0){
-		system("clear");
+		//system("clear");
 
 		int startValueY, destinationValueY;
-		char moveInput[6];
+		char moveInput[100];
 
 		printf("%s", gameBanner);
 
-		printBoard(mainBoard, boardOrientation, movePiecesReturn);
+		//printBoard(mainBoard, boardOrientation, movePiecesReturn);
 
 		// take move input
 		printf("your move: ");
-		scanf("%s", &moveInput);
+		fgets(moveInput, 100, stdin);
 
-		if(moveInput == "qt"){
-			quit();
-		} else if (moveInput == "rs"){
+		if(moveInput[0] == 'q'){
+			gameFinish = 1;
+		} else if (moveInput[0] == 'r'){
 			startGame(gameOrientation);
+		} else {
+			// typical string: "2:h-5:f"
+			startValueY = atoi(&moveInput[0]);
+			destinationValueY = atoi(&moveInput[4]);
+
+			movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
 		}
-
-		// typical string: "2:h-5:f"
-		startValueY = atoi(&moveInput[0]);
-		destinationValueY = atoi(&moveInput[4]);
-
-	  movePiecesReturn = movePieces(mainBoard, startValueY-1, moveInput[2], destinationValueY-1, moveInput[6]);
 	}
+	printf("\nGAME FINISHED\n");
 }
 
 void menu(){
@@ -284,5 +373,12 @@ void menu(){
 }
 
 int main(){
-	menu();
+	// change in online version
+	boardCreate();
+
+	printf("\n\n\n\n");
+	debug(mainBoard);
+	printf("\n\n\n\n");
+
+	//menu();
 }
