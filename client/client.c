@@ -4,8 +4,7 @@
 
 char gameBanner[] = " .d8888b.  888           ___  _ _  | |(_) _ _   ___  \nd88P  Y88b 888       _  / _ \\| ' \\ | || || ' \\ / -_) \n888    888 888      |_| \\___/|_||_||_||_||_||_|\\___| \n888        88888b.   .d88b.  .d8888b  .d8888b        \n888        888 \"88b d8P  Y8b 88K      88K            \n888    888 888  888 88888888 \"Y8888b. \"Y8888b.       \nY88b  d88P 888  888 Y8b.          X88      X88       \n \"Y8888P\"  888  888  \"Y8888   88888P'  88888P'       \n";
 
-
-char mainBoard[7][7];
+char mainBoard[8][8];
 
 void quit(){
 	printf("bye!\n");
@@ -36,12 +35,19 @@ int XcoordinatesConverter(char coordinateX){
 	return returnValue;
 }
 
-int ceckMove(char board[7][7], int startY, int startX, int destinationY, int destinationX, char pieceType){
+/*
+return:
+ 0 - err: unknown piece
+ 1 - ok: random good phrase
+ 2 - eated: eate: eated
+ 3 - err: illegal move
+*/
+int ceckMove(char board[8][8], int startY, int startX, int destinationY, int destinationX, char pieceType){
 	int deltaDistanceY = startY - destinationY;
 	int deltaDistanceX = startX - destinationX;
 	// setup the rules
 	switch(pieceType){
-		// p can move 1 each time only forward, and must it in diagonal
+		// p (pown) can move 1 each time only forward, and must it in diagonal
 		case 'p':
 			if((deltaDistanceX == 0 && deltaDistanceY == 1 && mainBoard[destinationY][destinationX] == '\x20') || (deltaDistanceY == 2 && (startY == 1 || startY == 6))){
 				return 1;
@@ -57,30 +63,34 @@ int ceckMove(char board[7][7], int startY, int startX, int destinationY, int des
 			if(deltaDistanceX == 0 && deltaDistanceY != 0 && mainBoard[destinationY][destinationX] == '\x20'){
 				for(int i = 0; i < deltaDistanceY; i++){
 					if(mainBoard[i][destinationX] != '\x20'){
-						return 1;
-					} else {
-						return 1;
+						return 3;
 					}
+				}
+				if(mainBoard[destinationY][destinationX] == '\x20'){
+					return 1;
+				} else {
+					return 2;
 				}
 			} else if(deltaDistanceY == 0 && deltaDistanceX != 0 && mainBoard[destinationY][destinationX] == '\x20'){
 				for(int i = 0; i < deltaDistanceX; i++){
-					if((deltaDistanceY == 0 && deltaDistanceX != 0 && mainBoard[deltaDistanceY][i] != '\x20') || (deltaDistanceY != 0 && deltaDistanceX == 0 && mainBoard[deltaDistanceY][i] != '\x20')){
-						return 1;
-					} else {
-						return 1;
+					if(mainBoard[deltaDistanceY][i] != '\x20'){
+						return 3;
 					}
 				}
-			} else if((deltaDistanceY == 0 && deltaDistanceX != 0 && mainBoard[destinationY][destinationX] != '\x20') || (deltaDistanceY != 0 && deltaDistanceX == 0 && mainBoard[destinationY][destinationX] != '\x20')){
-				return 2;
+				if(mainBoard[destinationY][destinationX] == '\x20'){
+					return 1;
+				} else {
+					return 2;
+				}
 			} else {
-				return 1;
+				return 3;
 			}
 
 		// c (horse) can do "l" move in all orientation
 		case 'c':
 			return 1;
 
-		// a (alfier) can move diagonaly
+		// a (bishop) can move diagonaly
 		case 'a':
 			return 1;
 
@@ -97,7 +107,7 @@ int ceckMove(char board[7][7], int startY, int startX, int destinationY, int des
 	}
 }
 
-int movePieces(char board[7][7], int startY, char startX, int destinationY, char destinationX){
+int movePieces(char board[8][8], int startY, char startX, int destinationY, char destinationX){
 	startY = abs(startY - 7);
 	destinationY = abs(destinationY - 7);
 
@@ -119,98 +129,27 @@ int movePieces(char board[7][7], int startY, char startX, int destinationY, char
 }
 
 void boardCreate(){
-	int y, x;
-	for(y = 0; y <= 7; y++){
-		printf("\n{");
-		for(x = 0; x <= 7; x++){
-			if(y == 1 || y == 6){
-				// pedone
+	for(int y = 0; y < 8; y++){
+		for(int x = 0; x < 8; x++){
+			if(y == 0 || y == 7){
+				if(x == 0 || x == 7){
+					mainBoard[y][x] = 't';
+				} else if(x == 1 || x == 6){
+					mainBoard[y][x] = 'h';
+				} else if(x == 2 || x == 5){
+					mainBoard[y][x] = 'b';
+				} else if(x == 3){
+					mainBoard[y][x] = 'q';
+				} else if(x == 4){
+					mainBoard[y][x] = 'k';
+				}	
+			} else if(y == 1 || y == 6){
 				mainBoard[y][x] = 'p';
-				printf("p, ");
-			} else if(y == 0 || y == 7){
-				if(x == 0 || x == 7){
-					if(x == 0){
-						mainBoard[y][x] = 'l';
-						printf("l, ");
-					} else {
-						mainBoard[y][x] = 'k';
-						printf("k, ");
-					}
-
-					// torre
-					//mainBoard[y][x] = 't';
-				}
-				if(x == 1 || x == 6){
-					// cavallo
-					mainBoard[y][x] = 'c';
-					printf("c, ");
-				}
-				if(x == 2 || x == 5){
-					// alfiere
-					mainBoard[y][x] = 'a';
-					printf("a, ");
-				}
-				if(x == 3){
-					// regina
-					mainBoard[y][x] = 'f';
-					printf("f, ");
-				}
-				if(x == 4){
-					// re
-					mainBoard[y][x] = 'm';
-					printf("m, ");
-
-				}
-			} else if(y >= 2 && y <= 5){
-				// casella vuota
+			} else {
 				mainBoard[y][x] = ' ';
-				printf(" , ");
 			}
 		}
-	}
-	return;
-}
-
-void debug(){
-	for(int y = 0; y <= 7; y++){
-		printf("\n{");
-		for(int x = 0; x <= 7; x++){
-			if(y == 1 || y == 6){
-				// pedone
-				printf("%c", mainBoard[y][x]);
-			} else if(y == 0 || y == 7){
-				if(x == 0 || x == 7){
-					if(x == 0){
-						printf("%c", mainBoard[y][x]);
-
-					} else {
-						printf("%c", mainBoard[y][x]);
-					}
-
-					// torre
-					//mainBoard[y][x] = 't';
-				}
-				if(x == 1 || x == 6){
-					// cavallo
-					printf("%c", mainBoard[y][x]);
-				}
-				if(x == 2 || x == 5){
-					// alfiere
-					printf("%c", mainBoard[y][x]);
-				}
-				if(x == 3){
-					// regina
-					printf("%c", mainBoard[y][x]);
-				}
-				if(x == 4){
-					// re
-					printf("%c", mainBoard[y][x]);
-				}
-			} else if(y >= 2 && y <= 5){
-				// casella vuota
-				printf("%c", mainBoard[y][x]);
-			}
-		}
+		printf("\n");
 	}
 	return;
 }
@@ -220,15 +159,33 @@ int move = 0;
 // orientation:
 // 1 - normal
 // 2 - reverse
-void printBoard(char board[7][7], int orientation, int moveReturnMessage){
+void printBoard(char board[8][8], int orientation, int moveReturnMessage){
 	int gameY, gameX, Nline;
+	char background[] = "\e[49m";
+	char defaultBackground[] = "\e[49m";
+	char foreground[] = "\e[39m";
 
 	switch(orientation){
 		case 1:
-			for(gameY = 0; gameY <= 7; gameY++){
+			for(gameY = 0; gameY < 8; gameY++){
 				printf("\n   +---+---+---+---+---+---+---+---+\n %d ", abs(gameY - 8));
 				for(gameX = 0; gameX < 8; gameX++){
-					printf("| %c%d%d ", board[gameY][gameX], gameY, gameX);
+					/*
+					if(gameY % 2 == 0){
+						if(gameX % 2 == 0){
+							strcpy(background, "\e[47m"); //light grey
+						} else {
+							strcpy(background, "\e[43m"); //dark yellow
+						}
+					} else {
+						if(gameX % 2 == 0){
+							strcpy(background, "\e[43m"); //dark yellow
+						} else {
+							strcpy(background, "\e[47m"); //light grey
+						}
+					}
+					*/
+					printf("|%s%s %c %s", foreground, background, board[gameY][gameX], defaultBackground);
 					if(gameX == 7){
 						printf("|");
 					}
@@ -309,20 +266,15 @@ void startGame(char gameOrientation[]){
 	// change in online version
 	boardCreate();
 
-
-	printf("\n\n\n\n");
-	debug(mainBoard);
-	printf("\n\n\n\n");
-
 	while(gameFinish == 0){
-		//system("clear");
+		system("clear");
 
 		int startValueY, destinationValueY;
 		char moveInput[100];
 
 		printf("%s", gameBanner);
 
-		//printBoard(mainBoard, boardOrientation, movePiecesReturn);
+		printBoard(mainBoard, boardOrientation, movePiecesReturn);
 
 		// take move input
 		printf("your move: ");
@@ -376,9 +328,6 @@ int main(){
 	// change in online version
 	boardCreate();
 
-	printf("\n\n\n\n");
-	debug(mainBoard);
-	printf("\n\n\n\n");
-
-	//menu();
+	menu();
 }
+
