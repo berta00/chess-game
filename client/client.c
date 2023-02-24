@@ -56,13 +56,13 @@ int ceckMove(char board[8][8], int startY, int startX, int destinationY, int des
 			} else {
 				return 3;
 			}
+			break;
 
 		// t (tower) can move only on the y or x asxis
 		case 't':
-			// check if the path is free
 			if(deltaDistanceX == 0 && deltaDistanceY != 0 && mainBoard[destinationY][destinationX] == '\x20'){
-				for(int i = 0; i < deltaDistanceY; i++){
-					if(mainBoard[i][destinationX] != '\x20'){
+				for(int i = 0; i < deltaDistanceY-1; i++){
+					if(mainBoard[startY + i][destinationX] != '\x20'){
 						return 3;
 					}
 				}
@@ -72,8 +72,8 @@ int ceckMove(char board[8][8], int startY, int startX, int destinationY, int des
 					return 2;
 				}
 			} else if(deltaDistanceY == 0 && deltaDistanceX != 0 && mainBoard[destinationY][destinationX] == '\x20'){
-				for(int i = 0; i < deltaDistanceX; i++){
-					if(mainBoard[deltaDistanceY][i] != '\x20'){
+				for(int i = 0; i < deltaDistanceX-1; i++){
+					if(mainBoard[destinationY][startX + i] != '\x20'){
 						return 3;
 					}
 				}
@@ -85,21 +85,45 @@ int ceckMove(char board[8][8], int startY, int startX, int destinationY, int des
 			} else {
 				return 3;
 			}
+			break;
 
-		// c (horse) can do "l" move in all orientation
-		case 'c':
+		// h (horse) can do "l" move in all orientation
+		case 'h':
+			if((abs(deltaDistanceX) == 2 && abs(deltaDistanceY) == 1) || (abs(deltaDistanceX) == 1 && abs(deltaDistanceY) == 2)){
+				if(mainBoard[destinationY][destinationX] == '\x20'){
+					return 1;
+				} else {
+					return 2;
+				}
+			} else {
+				return 3;
+			}
+			break;
+			
+		// b (bishop) can move diagonaly
+		case 'b':
+			if(abs(deltaDistanceX) == abs(deltaDistanceY)){
+				for(int i = 0; i < deltaDistanceX-1; i++){
+					if(mainBoard[startY + i][startX + i] != '\x20'){
+						return 3;
+					}
+				}
+				if(mainBoard[destinationY][destinationX] != '\x20'){
+					return 2;
+				} else {
+					return 1;
+				}
+			} else {
+				return 3;
+			}
+			break;
+
+		// q (queen) can move were she wants
+		case 'q':
 			return 1;
 
-		// a (bishop) can move diagonaly
-		case 'a':
-			return 1;
-
-		// f (queen) can move were she wants
-		case 'f':
-			return 1;
-
-		// m (king) can move once in all direction;
-		case 'm':
+		// k (king) can move once in all direction;
+		case 'k':
 			return 1;
 
 		default:
