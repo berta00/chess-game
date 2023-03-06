@@ -295,9 +295,6 @@ void startGame(char gameOrientation[]){
 		boardOrientation = 2;
 	}
 
-	// change in online version
-	boardCreate();
-
 	while(gameFinish == 0){
 		system("clear");
 
@@ -326,6 +323,40 @@ void startGame(char gameOrientation[]){
 	}
 
 	printf("\nGAME FINISHED\n");
+}
+
+void logPage(){
+	system("clear");
+	printf("%s", gameBanner);
+
+	int inputChoise;
+	char inputName[16];
+	char inputPass[16];
+
+	printf("\n");
+	printf("1: login \n");
+	printf("2: register \n");
+	printf("> ");
+
+	scanf("%d", inputChoise);
+	
+	switch(inputChoise){
+		case 1:
+			system("clear");
+			printf("%s", gameBanner);
+			
+			printf("\n");
+			printf("Insert your username: ");
+			fgets(inpuName, 16, stdin);
+
+			printf("Insert your passowrd: ");
+			fgest(inputPass, 16, stdin);
+
+			break;
+		case 2:
+			
+			break;
+	}
 }
 
 void menu(){
@@ -358,7 +389,9 @@ void menu(){
 }
 
 int main(){
-
-	menu();
+	logPage(){
+		
+	}
+	//menu();
 }
 
